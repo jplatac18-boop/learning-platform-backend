@@ -12,10 +12,7 @@ SECRET_KEY = config("SECRET_KEY", default="django-insecure-change-me")
 DEBUG = config("DEBUG", default=True, cast=bool)
 
 # Hosts permitidos
-if DEBUG:
-    ALLOWED_HOSTS = []
-else:
-    ALLOWED_HOSTS = ["learning-platform-backend-mbw5.onrender.com"]
+ALLOWED_HOSTS = ["*"]
 
 # CORS (Vite + Render)
 CORS_ALLOWED_ORIGINS = [
