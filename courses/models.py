@@ -1,7 +1,7 @@
 import os
 from django.db import models
 from django.core.exceptions import ValidationError
-
+from django.conf import settings
 
 def lesson_upload_path(instance, filename):
     course_id = instance.module.course_id
@@ -16,9 +16,9 @@ class Course(models.Model):
 
     # IMPORTANTE: consistente con tus ViewSets (InstructorProfile)
     instructor = models.ForeignKey(
-        "users.InstructorProfile",
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="courses",
+        related_name='courses',
     )
 
     titulo = models.CharField(max_length=200)
