@@ -101,7 +101,7 @@ class Command(BaseCommand):
     
     def _create_courses(self, instructors, students, num_courses: int):
         for i in range(num_courses):
-            instructor = random.choice(instructors)
+            instructor_profile = random.choice(instructors)   
 
             course = Course.objects.create(
                 titulo=fake.sentence(nb_words=4),
@@ -110,7 +110,7 @@ class Command(BaseCommand):
                 nivel=random.choice(["básico", "intermedio", "avanzado"]),
                 duracion=random.randint(4, 40),
                 estado=random.choice(["borrador", "publicado"]),
-                instructor=instructor,
+                instructor=instructor_profile.user,           
             )
 
             modules = self._create_modules(course)
