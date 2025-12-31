@@ -31,7 +31,12 @@ def get_instructor_profile(user):
 # Courses
 # =========================
 class CourseViewSet(viewsets.ModelViewSet):
-    queryset = Course.objects.select_related("instructor", "instructor__user").all()
+    # Solo seguimos la FK instructor; el modelo User ya no tiene "user"
+    queryset = (
+        Course.objects
+        .select_related("instructor")  # antes: "instructor", "instructor__user"
+        .all()
+    )
 
     def get_permissions(self):
         if self.action in ("list", "retrieve"):
@@ -57,7 +62,9 @@ class CourseViewSet(viewsets.ModelViewSet):
 
         ip = get_instructor_profile(user)
         if ip is not None:
-            return qs.filter(Q(estado=Course.Estado.PUBLICADO) | Q(instructor=ip)).distinct()
+            return qs.filter(
+                Q(estado=Course.Estado.PUBLICADO) | Q(instructor=ip)
+            ).distinct()
 
         return qs.filter(estado=Course.Estado.PUBLICADO)
 
@@ -79,19 +86,28 @@ class CourseViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         obj = self.get_object()
         if not CanReadCourse().has_object_permission(request, self, obj):
-            return Response({"detail": "No permitido."}, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"detail": "No permitido."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         return super().retrieve(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
         obj = self.get_object()
         if not IsCourseOwnerOrAdmin().has_object_permission(request, self, obj):
-            return Response({"detail": "No permitido."}, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"detail": "No permitido."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         return super().update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object()
         if not IsCourseOwnerOrAdmin().has_object_permission(request, self, obj):
-            return Response({"detail": "No permitido."}, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"detail": "No permitido."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         return super().destroy(request, *args, **kwargs)
 
     @action(
@@ -103,7 +119,10 @@ class CourseViewSet(viewsets.ModelViewSet):
     def publish(self, request, pk=None):
         course = self.get_object()
         if not IsCourseOwnerOrAdmin().has_object_permission(request, self, course):
-            return Response({"detail": "No permitido."}, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"detail": "No permitido."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         course.estado = Course.Estado.PUBLICADO
         course.save(update_fields=["estado"])
         return Response(CourseDetailSerializer(course).data)
@@ -117,7 +136,10 @@ class CourseViewSet(viewsets.ModelViewSet):
     def draft(self, request, pk=None):
         course = self.get_object()
         if not IsCourseOwnerOrAdmin().has_object_permission(request, self, course):
-            return Response({"detail": "No permitido."}, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"detail": "No permitido."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         course.estado = Course.Estado.BORRADOR
         course.save(update_fields=["estado"])
         return Response(CourseDetailSerializer(course).data)
