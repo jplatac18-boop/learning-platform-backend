@@ -1,6 +1,5 @@
 from pathlib import Path
 from decouple import config
-import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -12,19 +11,11 @@ MEDIA_ROOT = BASE_DIR / "media"
 SECRET_KEY = config("SECRET_KEY", default="django-insecure-change-me")
 DEBUG = config("DEBUG", default=True, cast=bool)
 
-# Render expone RENDER_EXTERNAL_HOSTNAME en producción (lo dejamos por si luego lo quieres usar)
-render_host = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
-env_allowed_hosts = config("ALLOWED_HOSTS", default="", cast=str)
-
+# Hosts permitidos
 if DEBUG:
     ALLOWED_HOSTS = []
 else:
-    if env_allowed_hosts:
-        # separar por comas si pones varios: "host1,host2"
-        ALLOWED_HOSTS = [h.strip() for h in env_allowed_hosts.split(",") if h.strip()]
-    else:
-        # fallback amplio para evitar el DisallowedHost en este proyecto
-        ALLOWED_HOSTS = ["*"]
+    ALLOWED_HOSTS = ["learning-platform-backend-mbw5.onrender.com"]
 
 # CORS (Vite + Render)
 CORS_ALLOWED_ORIGINS = [
@@ -37,8 +28,6 @@ CORS_ALLOWED_ORIGINS = [
 frontend_origin = config("FRONTEND_ORIGIN", default=None)
 if frontend_origin:
     CORS_ALLOWED_ORIGINS.append(frontend_origin)
-# Si algún día usas cookies/sesión cross-site:
-# CORS_ALLOW_CREDENTIALS = True
 
 INSTALLED_APPS = [
     "django.contrib.admin",
