@@ -14,13 +14,17 @@ DEBUG = config("DEBUG", default=True, cast=bool)
 
 # Render expone RENDER_EXTERNAL_HOSTNAME en producción (lo dejamos por si luego lo quieres usar)
 render_host = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+env_allowed_hosts = config("ALLOWED_HOSTS", default="", cast=str)
 
-# Hosts permitidos
 if DEBUG:
     ALLOWED_HOSTS = []
 else:
-    # Para este proyecto de práctica permitimos todo en producción
-    ALLOWED_HOSTS = ["*"]
+    if env_allowed_hosts:
+        # separar por comas si pones varios: "host1,host2"
+        ALLOWED_HOSTS = [h.strip() for h in env_allowed_hosts.split(",") if h.strip()]
+    else:
+        # fallback amplio para evitar el DisallowedHost en este proyecto
+        ALLOWED_HOSTS = ["*"]
 
 # CORS (Vite + Render)
 CORS_ALLOWED_ORIGINS = [
