@@ -2,36 +2,32 @@ from pathlib import Path
 from decouple import config
 import os
 
-
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Media
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-
 # Seguridad / entorno
 SECRET_KEY = config("SECRET_KEY", default="django-insecure-change-me")
 DEBUG = config("DEBUG", default=True, cast=bool)
 
-# Render expone RENDER_EXTERNAL_HOSTNAME en producción
+# Render expone RENDER_EXTERNAL_HOSTNAME en producción (lo dejamos por si luego lo quieres usar)
 render_host = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
 
+# Hosts permitidos
 if DEBUG:
     ALLOWED_HOSTS = []
 else:
-    if render_host:
-        ALLOWED_HOSTS = [render_host]
-    else:
-        ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="").split(",")
-
+    # Para este proyecto de práctica permitimos todo en producción
+    ALLOWED_HOSTS = ["*"]
 
 # CORS (Vite + Render)
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "https://learning-platform-frontend-2ln5.onrender.com",
+    "https://learning-platform-backend-mbw5.onrender.com",
 ]
 
 frontend_origin = config("FRONTEND_ORIGIN", default=None)
@@ -39,7 +35,6 @@ if frontend_origin:
     CORS_ALLOWED_ORIGINS.append(frontend_origin)
 # Si algún día usas cookies/sesión cross-site:
 # CORS_ALLOW_CREDENTIALS = True
-
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -58,7 +53,6 @@ INSTALLED_APPS = [
     "feedback",
 ]
 
-
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -70,12 +64,9 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-
 AUTH_USER_MODEL = "users.User"
 
-
 ROOT_URLCONF = "learning_platform_backend.urls"
-
 
 TEMPLATES = [
     {
@@ -92,9 +83,7 @@ TEMPLATES = [
     },
 ]
 
-
 WSGI_APPLICATION = "learning_platform_backend.wsgi.application"
-
 
 DATABASES = {
     "default": {
@@ -107,19 +96,16 @@ DATABASES = {
     }
 }
 
-
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
-
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
-
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
