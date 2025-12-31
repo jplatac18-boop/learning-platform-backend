@@ -31,6 +31,7 @@ else:
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "https://learning-platform-frontend-2ln5.onrender.com",
 ]
 
 frontend_origin = config("FRONTEND_ORIGIN", default=None)
